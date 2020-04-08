@@ -1,34 +1,40 @@
-import Vue from 'vue'
-import VueRouter from 'vue-router';
-import Home from '@/components/Home';
-import Login from '@/components/Login';
-import NotFound from '@/components/NotFound';
-import Board from '@/components/Board';
+import Vue from "vue";
+import VueRouter from "vue-router";
+import Home from "@/components/Home";
+import Login from "@/components/Login";
+import NotFound from "@/components/NotFound";
+import Board from "@/components/Board";
+import Card from "@/components/Card";
 Vue.use(VueRouter);
-
-
 
 const routes = [
   {
-    path: '/',  
+    path: "/",
     component: Home
   },
   {
-    path: '/login',
+    path: "/login",
     component: Login
   },
   {
-    path: '/b/:bid',
-    component: Board
+    path: "/b/:bid",
+    component: Board,
+    children: [
+      {
+        path: "c/:cid",
+        component: Card
+      }
+    ]
   },
+
   {
-    path: '*',
+    path: "*",
     component: NotFound
   }
 ];
 
 const router = new VueRouter({
-  mode: 'history',
+  mode: "history",
   routes
 });
 
