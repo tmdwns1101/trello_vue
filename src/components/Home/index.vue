@@ -9,12 +9,12 @@
                 </router-link>
             </div>
             <div class="board-item">
-                <a class="new-board-btn" href="" @click.prevent="addBoard">
+                <a class="new-board-btn" href="" @click.prevent="TOGGLE_IS_ADD_BOARD">
                     Create new board...
                 </a>
             </div>
         </div>
-        <AddBoard v-show="isAddBoard" @close="handleClose" @submit="handleAddBoard"></AddBoard>
+        <AddBoard v-show="isAddBoard" ></AddBoard>
   </div>
    
 </template>
@@ -22,21 +22,26 @@
 <script>
 import {board, setAuthInHeader} from "@/service";
 import AddBoard from "./AddBoard.vue";
+import {mapState, mapMutations, mapActions} from "vuex";
 export default {
    data() {
        return {
-           boardList: [],
            loading: false,
            error: null,
-           isAddBoard: false
+           
           
        }
    },
    components: {AddBoard},
-
+   computed: {
+       ...mapState([
+       'isAddBoard',
+       'boardList'
+    ])
+   },
    created() {
        const token = localStorage.getItem('token');
-       setAuthInHeader(token);
+      
        this.fetchData();
    },
    updated() {
@@ -51,33 +56,34 @@ export default {
    methods: {
        fetchData() {
            this.loading = true;
-           board.fetch().then(res => {
+           this.FETCH_BOARDS().finally(()=>{
+               this.loading = false;
+           })
+           /*board.fetch().then(res => {
                console.log(res);
                this.boardList = res.list;
            })
            .finally(()=>{
                this.loading = false;
-           })
+           })*/
        },
-
+       ...mapMutations([
+           'TOGGLE_IS_ADD_BOARD',
+           
+       ]),
+       ...mapActions([
+           'FETCH_BOARDS'
+       ]),
+       /*
        addBoard() {
            console.log("Add Board!");
-           this.isAddBoard = true;
+           this.$store.commit('TOGGLE_IS_ADD_BOARD');
        },
 
        handleClose() {
-          this.isAddBoard = false;
+          this.$store.commit('TOGGLE_IS_ADD_BOARD');
        },
-
-       handleAddBoard(title) {
-           console.log(title);
-           board.create(title).then(data => {
-                const {item} = data;
-                console.log(data);
-                this.boardList.push(item);
-               })
-               .catch(err => this.error = err);
-       }
+       */
 
    }
 }

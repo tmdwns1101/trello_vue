@@ -4,7 +4,7 @@
       <h2>
         Create new board
         <a href="" class="modal-default-button" 
-          @click.prevent="close">&times;</a>
+          @click.prevent="TOGGLE_IS_ADD_BOARD">&times;</a>
       </h2>
     </div>
     <div slot="body">
@@ -22,7 +22,7 @@
 
 <script>
 import Modal from '@/components/commons/Modal.vue'
-
+import {mapMutations, mapActions} from 'vuex'
 export default {
   components: { Modal },
   data () {
@@ -40,12 +40,19 @@ export default {
     this.$refs.inputBoardTitle.focus();
   },
   methods: {
+      ...mapMutations([
+        'TOGGLE_IS_ADD_BOARD'
+      ]),
+      ...mapActions([
+        'ADD_BOARD',
+        'FETCH_BOARDS'
+      ]),
       close() {
-          this.$emit('close');
+         this.TOGGLE_IS_ADD_BOARD();
       },
       addBoard(){
-          this.$emit('close');
-          this.$emit('submit', this.inputBoardTitle);
+          this.TOGGLE_IS_ADD_BOARD();
+          this.ADD_BOARD({title: this.inputBoardTitle}).then(()=>this.FETCH_BOARDS());
       }
 
 
