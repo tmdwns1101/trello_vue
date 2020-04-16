@@ -1,15 +1,26 @@
-import {board, auth} from "@/service";
+import * as api from "@/service";
 
 const actions = {
     ADD_BOARD(context, {title}) {
 
-        return board.create(title);
+        return api.board.create(title).then(data => data.item);
     },
     FETCH_BOARDS({commit}){
-        return board.fetch().then(data => commit('SET_BOARDS',data.list))
+        return api.board.fetch().then(data => commit('SET_BOARDS',data.list))
+    },
+    FETCH_BOARD({commit}, id){
+        console.log(id);
+        return api.board.fetch(id).then(data => commit('SET_BOARD', data.item));
+    },
+
+    ADD_CARD({dispatch, state}, {title, listId, pos}) {
+        console.log("title is ",title);
+        
+        return api.card.create({title, listId, pos})
+            .then(()=> dispatch('FETCH_BOARD', state.board.id))
     },
     LOGIN({commit}, {email, password}) {
-        return auth.login(email, password)
+        return api.auth.login(email, password)
             .then(({accessToken}) => commit('LOGIN',accessToken))
     }
 };

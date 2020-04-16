@@ -52,7 +52,8 @@ export default {
       },
       addBoard(){
           this.TOGGLE_IS_ADD_BOARD();
-          this.ADD_BOARD({title: this.inputBoardTitle}).then(()=>this.FETCH_BOARDS());
+          this.ADD_BOARD({title: this.inputBoardTitle})
+            .then(({id})=>this.$router.push(`/b/${id}`));
       }
 
 

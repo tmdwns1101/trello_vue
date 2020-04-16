@@ -9,6 +9,10 @@ const mutations = {
         console.log(boards);
         state.boardList = boards;
     },
+    SET_BOARD(state, board){
+        console.log(board);
+        state.board = board;
+    },
     LOGIN(state, token) {
         if(!token) return;
         state.token = token;

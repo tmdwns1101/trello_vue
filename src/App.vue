@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <NavBar></NavBar>
-    <router-view></router-view>
+    <router-view class="container"></router-view>
   </div>
   
 </template>
@@ -71,6 +71,6 @@ textarea.form-control {
   background-color: #fff;
 }
 
-</style>>
-
 </style>
+
+
