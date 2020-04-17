@@ -25,7 +25,7 @@ export default {
     },
     mounted() {
         this.$refs.inputText.focus();
-        this.setUpClickOutside(this.$el);
+        this.setUpClickOutside();
         
     },
     methods:{
@@ -39,21 +39,24 @@ export default {
             this.ADD_CARD({title: inputTitle, listId})
                 .finally(() => this.inputTitle = '');
         },
-        setUpClickOutside(el) {
-            document.querySelector('body').addEventListener('click', e => this.closeClickListener(el,e))
+        setUpClickOutside() {
+            document.getElementById('app').addEventListener('click',this.closeClickListener)
+            //document.querySelector('body').addEventListener('click', e => this.closeClickListener(el,e))
         },
 
-        closeClickListener(el,e) {
-            
+        closeClickListener(e) {
+            const el = this.$el;
             if(el.contains(e.target)) return;
-            console.log(e.target);
+          
             this.$emit('close');
         }
     },
     /*2020.04.17 이슈:  이벤트 해제 가 안됨.*/
+    /*2020.04.17 이슈 해결 */
+    
     beforeDestroy() {
         console.log("destory!")
-        document.querySelector('body').removeEventListener('click', e => this.closeClickListener(el,e))
+        document.getElementById('app').removeEventListener('click',this.closeClickListener)
     }
     
 }
