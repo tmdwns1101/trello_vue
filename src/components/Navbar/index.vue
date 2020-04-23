@@ -12,10 +12,15 @@
 
 <script>
 
-import {mapMutations, mapGetters} from "vuex"
+import {mapMutations,mapState, mapGetters} from "vuex"
 export default {
   
-
+  mounted() {
+    this.updateTheme();
+  },
+  watch: {
+    'bodyColor': 'updateTheme'
+  },
   methods: {
     ...mapMutations([
       'LOGOUT'
@@ -23,10 +28,25 @@ export default {
     logout() {
        this.LOGOUT();
        this.$router.push('/login');
-    }
-  },
+    },
 
+    updateTheme() {
+       this.$el.style.backgroundColor = this.navbarColor;
+       const body = document.querySelector('body');
+       
+
+       if(body) body.style.backgroundColor = this.bodyColor;
+       
+    },
+    
+  },
+ 
+ 
   computed: {
+    ...mapState([
+      'navbarColor',
+      'bodyColor'
+    ]),
     ...mapGetters([
       'isAuth'
     ])

@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import {mapActions} from 'vuex'
+import {mapActions, mapGetters} from 'vuex'
 export default {
     props: ['listId'],
     data(){
@@ -19,6 +19,9 @@ export default {
         }
     },
     computed: {
+        ...mapGetters([
+            'getCurList'
+        ]),
         invalidInput(){
             return !this.inputTitle.trim();
         }
@@ -35,9 +38,17 @@ export default {
         onSubmit() {
             if(this.invalidInput) return;
             const {inputTitle, listId} = this;
-         
-            this.ADD_CARD({title: inputTitle, listId})
+            const pos = this.newCardPos();
+            this.ADD_CARD({title: inputTitle, listId, pos})
                 .finally(() => this.inputTitle = '');
+        },
+        newCardPos() {
+            const curList = this.getCurList(this.listId);
+            if(!curList) return 65535;
+            const {cards} = curList;
+            if(!cards.length) return 65535;
+            return cards[cards.length-1].pos * 2;
+            
         },
         setUpClickOutside() {
             document.getElementById('app').addEventListener('click',this.closeClickListener)

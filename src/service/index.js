@@ -3,9 +3,14 @@ import router from '@/router';
 
 const DOMAIN = "http://localhost:3000";
 const UNAUTHORIZED = 401;
+const NOTFOUND = 404;
 
 const onUnauthorized = () => {
     router.push(`/login?rPath=${encodeURIComponent(location.pathname)}`);
+}
+
+const onNotFound = () => {
+    router.push("/");
 }
 
 const request = (method, url, data) => {
@@ -18,6 +23,7 @@ const request = (method, url, data) => {
           const {status} = res.response;
           
           if (status === UNAUTHORIZED) onUnauthorized();
+          if (status === NOTFOUND) onNotFound();
           throw res.response;
       })
 }
@@ -32,6 +38,13 @@ export const board = {
     },
     create(title) {
         return request('post', '/boards', {title});
+    },
+    destroy(id) {
+        return request('delete', `/boards/${id}`);
+    },
+    update(id, payload) {
+      
+        return request('put', `/boards/${id}`, payload);
     }
 }
 
@@ -46,6 +59,10 @@ export const card = {
 
     update(id, payload) {
         return request('put', `/cards/${id}`, payload);
+    },
+
+    destory(id) {
+        return request('delete', `/cards/${id}`);
     }
 }
 

@@ -56,7 +56,7 @@ export default {
     fetchCard() {
       const {cid} = this.$route.params;
       console.log(cid);
-      this.FETCH_CARD(cid)
+      this.FETCH_CARD({id: cid})
         .then(()=> this.desc = this.card.description)
     },
     onClickClose() {

@@ -2,15 +2,15 @@ import {setAuthInHeader} from "@/service";
 
 const mutations = {
     TOGGLE_IS_ADD_BOARD (state) {
-        console.log("mutation!");
+       
         state.isAddBoard = !state.isAddBoard;
     },
     SET_BOARDS (state, boards) {
-        console.log(boards);
+      
         state.boardList = boards;
     },
     SET_BOARD(state, board){
-        console.log(board);
+        
         state.board = board;
     },
     SET_CARD(state, card) {
@@ -28,6 +28,15 @@ const mutations = {
         delete localStorage.token;
         setAuthInHeader(null);
 
+    },
+
+    SET_THEME(state, color) {
+        state.bodyColor = color ? color : '#ffffff';
+        state.navbarColor = color ? 'rgba(0,0,0,.15)' : '#026aa7'
+    },
+
+    TOGGLE_BOARD_SETTING(state, toggle) {
+        state.toggleBoardSetting = toggle;
     }
 };
 

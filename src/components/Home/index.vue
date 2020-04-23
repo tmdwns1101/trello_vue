@@ -43,6 +43,7 @@ export default {
        const token = localStorage.getItem('token');
       
        this.fetchData();
+       this.SET_THEME()
    },
    updated() {
        const boardItemByRef = this.$refs.boardItem;   // Vue 문법
@@ -59,31 +60,17 @@ export default {
            this.FETCH_BOARDS().finally(()=>{
                this.loading = false;
            })
-           /*board.fetch().then(res => {
-               console.log(res);
-               this.boardList = res.list;
-           })
-           .finally(()=>{
-               this.loading = false;
-           })*/
+          
        },
        ...mapMutations([
            'TOGGLE_IS_ADD_BOARD',
+           'SET_THEME'
            
        ]),
        ...mapActions([
            'FETCH_BOARDS'
        ]),
-       /*
-       addBoard() {
-           console.log("Add Board!");
-           this.$store.commit('TOGGLE_IS_ADD_BOARD');
-       },
-
-       handleClose() {
-          this.$store.commit('TOGGLE_IS_ADD_BOARD');
-       },
-       */
+     
 
    }
 }

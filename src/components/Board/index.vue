@@ -3,8 +3,18 @@
     <div class="board-wrapper">
       <div class="board">
         <div class="board-header">
-          <span class="board-title">{{board.title}}</span>
+          <input class="form-control" v-if="isEditTitle" type="text" 
+          v-model="inputTitle" 
+          ref="inputTitle"
+          @blur="onSubmitEditTitle"
+          @keyup.enter="onSubmitEditTitle"
+          >
+          <span v-else class="board-title" @click.prevent="onEditTitle">{{board.title}}</span>
+          <a href="" class="board-header-btn show-menu" @click.prevent="onShowSettings">
+            ...Show Menu
+          </a>
         </div>
+        
         <div class="list-section-wrapper">
           <div class="list-section">
             <div class="list-wrapper" v-for="list in board.lists" :key="list.pos">
@@ -14,48 +24,155 @@
 
         </div>
       </div>
+      <BoardSettings></BoardSettings>
     </div>
+   
     <router-view></router-view>
   </div>
 </template>
 
 <script>
-import {mapState, mapActions} from 'vuex';
+import {mapState, mapActions, mapMutations} from 'vuex';
 import List from './List';
+import dragula from 'dragula';
+import 'dragula/dist/dragula.css';
+import dragger from '@/utils/dragger';
+import BoardSettings from "./BoardSettings";
 
 export default {
   components: {
-    List
+    List,
+    BoardSettings
   },
   data() {
     return {
       bid: 0,
-      cards: [1, 2, 3],
-      loading: false
+      loading: false,
+      cDragger: null,
+      isEditTitle: false,
+      inputTitle: ""
     };
   },
   computed:{
     ...mapState({
-      board: 'board'
+      board: 'board',
+      toggleBoardSetting: 'toggleBoardSetting'
     })
   },
   created() {
     const { bid } = this.$route.params;
     this.bid = bid;
-    console.log(bid);
-    this.fetchData();
+    
+  
+    this.fetchData().then(() =>{
+       this.inputTitle = this.board.title;
+       this.SET_THEME(this.board.bgColor)
+    });
+    this.TOGGLE_BOARD_SETTING(false);
   },
-
+  updated(){
+    this.setCardDragable();
+  },
   methods: {
     ...mapActions([
-      'FETCH_BOARD'
+      'FETCH_BOARD',
+      'UPDATE_CARD',
+      'UPDATE_BOARD'
+      
+    ]),
+    ...mapMutations([
+      'SET_THEME',
+      'TOGGLE_BOARD_SETTING'
     ]),
     fetchData() {
       this.loading = true;
-      this.FETCH_BOARD(this.bid)
+      return this.FETCH_BOARD({id: this.bid})
         .then(()=> this.loading = false);
      
+    },
+    setCardDragable(){
+      if(this.cDragger) this.cDragger.destroy();
+
+      const cardList = Array.from(this.$el.querySelectorAll('.card-list'));
+      this.cDragger = dragger.init(cardList);
+
+      this.cDragger.on('drop', (el, wrapper, target, sibling) => {
+        const targetCard = {
+          id: el.dataset.cardId * 1,
+          pos: 65535
+        };
+
+
+        const {prev, next} = dragger.sibling({
+          el,
+          candidates: Array.from(wrapper.querySelectorAll('.card-item')),
+          type: 'card'
+        });
+
+        if(!prev && next) targetCard.pos = next.pos / 2;
+        else if(prev && !next) targetCard.pos = prev.pos * 2;
+        else if(prev && next) targetCard.pos = (prev.pos + next.pos) / 2;
+        else console.log("error")
+        console.log(targetCard)
+
+        this.UPDATE_CARD(targetCard);
+      })
+    },
+
+    onShowSettings() {
+      this.TOGGLE_BOARD_SETTING(true);
+    },
+    onEditTitle() {
+      this.isEditTitle = true;
+      this.$nextTick(() => {
+        this.$refs.inputTitle.focus();
+      })
+    },
+    onSubmitEditTitle() {
+      this.isEditTitle = false
+      const title = this.inputTitle.trim();
+      if(!title) return;
+      if (title === this.board.title) return;
+
+      const id = this.board.id;
+
+      this.UPDATE_BOARD({id, title});
+        
     }
+
+    /*computedPosition  (el, wrapper, target, sibling)  {
+        const targetCard = {
+          id: el.dataset.cardId * 1,
+          pos: 65535
+        };
+
+        let prevCard = null;
+        let nextCard = null;
+
+        Array.from(wrapper.querySelectorAll('.card-item'))
+          .forEach((el,idx, arr) => {
+            const cardId = el.dataset.cardId * 1;
+            if(targetCard.id == cardId) {
+              prevCard = idx > 0 ? {
+                id: arr[idx-1].dataset.cardId * 1,
+                pos: arr[idx-1].dataset.cardPos * 1
+              } : null;
+
+              nextCard = idx < arr.length - 1? {
+                id: arr[idx+1].dataset.cardId * 1,
+                pos: arr[idx+1].dataset.cardPos * 1
+              } : null;
+            }
+          });
+
+          if(!prevCard && nextCard) targetCard.pos = nextCard.pos / 2;
+          else if(prevCard && !nextCard) targetCard.pos = prevCard.pos * 2;
+          else if(prevCard && nextCard) targetCard.pos = (prevCard.pos + nextCard.pos) / 2;
+          else console.log("error")
+          console.log(targetCard)
+
+          this.UPDATE_CARD(targetCard);
+    }*/
   }
 };
 </script>
@@ -67,6 +184,7 @@ export default {
   bottom: 0;
   right: 0;
   left: 0;
+  overflow: hidden;
 }
 .board {
   display: flex;

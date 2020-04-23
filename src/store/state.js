@@ -3,7 +3,10 @@ const state = {
     boardList: [],
     board: {},
     card: {},
-    token: null
+    token: null,
+    bodyColor: '#ffffff',
+    navbarColor: '#026aa7',
+    toggleBoardSetting: false
 }
 
 
