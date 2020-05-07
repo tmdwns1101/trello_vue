@@ -48,6 +48,18 @@ export const board = {
     }
 }
 
+export const list = {
+    create(payload) {
+        return request('post', '/lists', payload);
+    },
+    update(id, payload) {
+        return request('put', `/lists/${id}`, payload);
+    },
+    destory(id) {
+        return request('delete', `/lists/${id}`);
+    }
+}
+
 export const card = {
     create({title, listId, pos}) {
         return request('post', '/cards', {title, listId,pos});

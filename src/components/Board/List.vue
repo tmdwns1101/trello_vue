@@ -1,8 +1,21 @@
 <template>
  
-    <div class="list">
+    <div class="list" :data-list-id="data.id" :data-list-pos="data.pos">
         <div class="list-header">
-            <div class="list-header-title">{{data.title}}</div>
+            <input 
+              v-if="isEdit" 
+              class="form-control" 
+              v-model="inputTitle" 
+              type="text"
+              ref="inputTitle"
+              @blur="onBlur"
+              @keyup.enter="onEditTitle"
+              >
+
+            <div v-else class="list-header-title" @click.prevent="onClickTitle">
+              {{data.title}}
+            </div>
+            <a href="" class="delete-list-btn" @click.prevent="onDelete">&times;</a>
         </div>
         <div class="card-list">
             <CardItem v-for="card in data.cards" :key="card.id" :data="card"/>
@@ -23,18 +36,69 @@
 <script>
 import AddCard from "./AddCard";
 import CardItem from "./CardItem";
+import {mapActions} from 'vuex';
 
 export default {
     components: {
         AddCard,
-        CardItem
+        CardItem,
+
     },
     props: ['data'],
     data() {
         return {
-            isAddBoard: false 
+            isAddBoard: false,
+            isEdit: false,
+            inputTitle: '' 
         }
+    },
+
+    created() {
+      this.inputTitle = this.data.title;
+    },
+
+    methods: {
+      ...mapActions([
+        'UPDATE_LIST',
+        'DELETE_LIST'
+      ]),
+      onClickTitle() {
+        this.isEdit = true;
+        this.$nextTick(() => this.$refs.inputTitle.focus());
+        
+      },
+      onBlur() {
+        console.log("list blur")
+        this.isEdit = false;
+      },
+      onEditTitle() {
+        
+        const title = this.inputTitle.trim();
+        this.onBlur();
+        if(!title) {
+          this.inputTitle = this.data.title;
+          return;
+        }
+
+        if(title === this.data.title) return;
+
+        const {id, pos} = this.data;
+
+        
+        this.UPDATE_LIST({id, title, pos});
+
+      },
+
+      onDelete() {
+        if(!window.confirm("정말 삭제하시겠습니까?")) return;
+
+        this.DELETE_LIST(this.data.id);
+      }
     }
+
+    
+
+
 }
 </script>
 

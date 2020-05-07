@@ -17,11 +17,13 @@
         
         <div class="list-section-wrapper">
           <div class="list-section">
-            <div class="list-wrapper" v-for="list in board.lists" :key="list.pos">
+            <div class="list-wrapper" v-for="list in board.lists" :key="list.id" :data-list-id="list.id">
                 <List :data="list" />
             </div>
+            <div class="list-wrapper">
+                <AddList/>
+            </div>
           </div>
-
         </div>
       </div>
       <BoardSettings></BoardSettings>
@@ -38,17 +40,19 @@ import dragula from 'dragula';
 import 'dragula/dist/dragula.css';
 import dragger from '@/utils/dragger';
 import BoardSettings from "./BoardSettings";
-
+import AddList from "./AddList"
 export default {
   components: {
     List,
-    BoardSettings
+    BoardSettings,
+    AddList
   },
   data() {
     return {
       bid: 0,
       loading: false,
       cDragger: null,
+      lDragger: null,
       isEditTitle: false,
       inputTitle: ""
     };
@@ -72,12 +76,15 @@ export default {
   },
   updated(){
     this.setCardDragable();
+    this.setListDragable();
+
   },
   methods: {
     ...mapActions([
       'FETCH_BOARD',
       'UPDATE_CARD',
-      'UPDATE_BOARD'
+      'UPDATE_BOARD',
+      'UPDATE_LIST'
       
     ]),
     ...mapMutations([
@@ -118,6 +125,38 @@ export default {
         this.UPDATE_CARD(targetCard);
       })
     },
+    setListDragable() {
+      if(this.lDragger) this.lDragger.destroy();
+
+      const options = {
+        invalid: (el, handle) => (!/^list/.test(handle.className))
+      }
+
+      const listContainer = Array.from(this.$el.querySelectorAll('.list-section'));
+      this.lDragger = dragger.init(listContainer,options);
+
+      this.lDragger.on('drop', (el, wrapper, target, sibling) => {
+        const targetList = {
+          id: el.dataset.listId * 1,
+          pos: 65535
+        };
+
+
+        const {prev, next} = dragger.sibling({
+          el,
+          candidates: Array.from(wrapper.querySelectorAll('.list')),
+          type: 'list'
+        });
+
+        if(!prev && next) targetList.pos = next.pos / 2;
+        else if(prev && !next) targetList.pos = prev.pos * 2;
+        else if(prev && next) targetList.pos = (prev.pos + next.pos) / 2;
+        else console.log("error")
+      
+
+        this.UPDATE_LIST(targetList);
+      })
+    },
 
     onShowSettings() {
       this.TOGGLE_BOARD_SETTING(true);
@@ -139,40 +178,6 @@ export default {
       this.UPDATE_BOARD({id, title});
         
     }
-
-    /*computedPosition  (el, wrapper, target, sibling)  {
-        const targetCard = {
-          id: el.dataset.cardId * 1,
-          pos: 65535
-        };
-
-        let prevCard = null;
-        let nextCard = null;
-
-        Array.from(wrapper.querySelectorAll('.card-item'))
-          .forEach((el,idx, arr) => {
-            const cardId = el.dataset.cardId * 1;
-            if(targetCard.id == cardId) {
-              prevCard = idx > 0 ? {
-                id: arr[idx-1].dataset.cardId * 1,
-                pos: arr[idx-1].dataset.cardPos * 1
-              } : null;
-
-              nextCard = idx < arr.length - 1? {
-                id: arr[idx+1].dataset.cardId * 1,
-                pos: arr[idx+1].dataset.cardPos * 1
-              } : null;
-            }
-          });
-
-          if(!prevCard && nextCard) targetCard.pos = nextCard.pos / 2;
-          else if(prevCard && !nextCard) targetCard.pos = prevCard.pos * 2;
-          else if(prevCard && nextCard) targetCard.pos = (prevCard.pos + nextCard.pos) / 2;
-          else console.log("error")
-          console.log(targetCard)
-
-          this.UPDATE_CARD(targetCard);
-    }*/
   }
 };
 </script>
