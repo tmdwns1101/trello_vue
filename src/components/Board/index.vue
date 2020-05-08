@@ -41,6 +41,8 @@ import 'dragula/dist/dragula.css';
 import dragger from '@/utils/dragger';
 import BoardSettings from "./BoardSettings";
 import AddList from "./AddList"
+
+
 export default {
   components: {
     List,
@@ -58,7 +60,7 @@ export default {
     };
   },
   computed:{
-    ...mapState({
+    ...mapState('board',{
       board: 'board',
       toggleBoardSetting: 'toggleBoardSetting'
     })
@@ -81,14 +83,25 @@ export default {
   },
   methods: {
     ...mapActions([
-      'FETCH_BOARD',
+      
       'UPDATE_CARD',
-      'UPDATE_BOARD',
+
       'UPDATE_LIST'
+      
+    ]),
+     ...mapActions('board',[
+      'FETCH_BOARD',
+      
+      'UPDATE_BOARD',
+      
       
     ]),
     ...mapMutations([
       'SET_THEME',
+     
+    ]),
+     ...mapMutations('board',[
+      
       'TOGGLE_BOARD_SETTING'
     ]),
     fetchData() {

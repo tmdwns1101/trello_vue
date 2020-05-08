@@ -1,18 +1,7 @@
 import {setAuthInHeader} from "@/service";
 
 const mutations = {
-    TOGGLE_IS_ADD_BOARD (state) {
-       
-        state.isAddBoard = !state.isAddBoard;
-    },
-    SET_BOARDS (state, boards) {
-      
-        state.boardList = boards;
-    },
-    SET_BOARD(state, board){
-        
-        state.board = board;
-    },
+    
     SET_CARD(state, card) {
         state.card = card;
     },
@@ -35,9 +24,7 @@ const mutations = {
         state.navbarColor = color ? 'rgba(0,0,0,.15)' : '#026aa7'
     },
 
-    TOGGLE_BOARD_SETTING(state, toggle) {
-        state.toggleBoardSetting = toggle;
-    }
+   
 };
 
 

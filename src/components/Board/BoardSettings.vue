@@ -22,8 +22,9 @@
 </template>
 
 <script>
-import {mapState, mapMutations, mapActions, mapGetters} from 'vuex';
+import {mapState, mapMutations, mapActions, mapGetters, createNamespacedHelpers} from 'vuex';
 
+const boardHelper = createNamespacedHelpers('board');
 export default {
     data() {
       return {
@@ -41,20 +42,24 @@ export default {
       })
     },
     computed: {
-        ...mapState([
+        ...boardHelper.mapState([
             'toggleBoardSetting',
             'board'
         ]),
-        ...mapGetters([
+        ...boardHelper.mapGetters([
             'getBoardId'
         ])
     },
     methods: {
-        ...mapMutations([
+        ...boardHelper.mapMutations([
             'TOGGLE_BOARD_SETTING',
             'SET_THEME'
         ]),
-        ...mapActions([
+        ...mapMutations([
+            
+            'SET_THEME'
+        ]),
+        ...boardHelper.mapActions([
             'DELETE_BOARD',
             'UPDATE_BOARD'
         ]),

@@ -22,7 +22,7 @@
 <script>
 import {board, setAuthInHeader} from "@/service";
 import AddBoard from "./AddBoard.vue";
-import {mapState, mapMutations, mapActions} from "vuex";
+import {mapState, mapMutations, mapActions, createNamespacedHelpers} from "vuex";
 export default {
    data() {
        return {
@@ -34,7 +34,7 @@ export default {
    },
    components: {AddBoard},
    computed: {
-       ...mapState([
+       ...mapState('board',[
        'isAddBoard',
        'boardList'
     ])
@@ -62,12 +62,15 @@ export default {
            })
           
        },
-       ...mapMutations([
+       ...mapMutations('board',[
            'TOGGLE_IS_ADD_BOARD',
-           'SET_THEME'
+           
            
        ]),
-       ...mapActions([
+       ...mapMutations([
+           'SET_THEME'
+       ]),
+       ...mapActions('board',[
            'FETCH_BOARDS'
        ]),
      
